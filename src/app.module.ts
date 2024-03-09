@@ -15,9 +15,6 @@ import { ShowModule } from './show/show.module';
 import { TicketModule } from './ticket/ticket.module';
 import { PointModule } from './point/point.module';
 import { Point } from './point/entites/point.entity';
-import { SeatModule } from './seat/seat.module';
-import { RoundSeatModule } from './round_seat/round_seat.module';
-import { RoundModule } from './round/round.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -35,7 +32,6 @@ const typeOrmModuleOptions = {
   }),
   inject: [ConfigService],
 };
-
 
 @Module({
   imports: [
@@ -57,10 +53,7 @@ const typeOrmModuleOptions = {
     HallModule,
     ShowModule,
     TicketModule,
-    PointModule,
-    SeatModule,
-    RoundSeatModule,
-    RoundModule
+    PointModule
   ],
   controllers: [AppController],
   providers: [AppService, {
