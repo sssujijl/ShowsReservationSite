@@ -1,7 +1,8 @@
 import { IsBoolean, IsEmail, IsMobilePhone, IsString } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Point } from '../../point/entites/point.entity';
 
-@Entity({name: 'users'})
+@Entity({ name: 'users' })
 @Unique(['email', 'phone'])
 export class User {
     @PrimaryGeneratedColumn()
@@ -16,7 +17,7 @@ export class User {
     email: string;
 
     @IsString()
-    @Column('varchar', { nullable: false })
+    @Column('varchar', { select: false, nullable: false })
     password: string;
 
     @IsMobilePhone('ko-KR')
@@ -24,6 +25,10 @@ export class User {
     phone: string;
 
     @IsBoolean()
-    @Column({ type: 'boolean', default: false })
+    @Column('boolean', { select: false, default: false })
     admin: boolean;
+
+    @OneToOne(() => Point, (point) => point.user)
+    @JoinColumn()
+    point: Point;
 }
