@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateRoundSeatDto } from './dto/create-round_seat.dto';
-import { UpdateRoundSeatDto } from './dto/update-round_seat.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { RoundSeat } from "./entities/round_seat.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class RoundSeatService {
-  create(createRoundSeatDto: CreateRoundSeatDto) {
-    return 'This action adds a new roundSeat';
+  constructor(
+    @InjectRepository(RoundSeat)
+    private readonly roundSeatRepository: Repository<RoundSeat>,
+  ) {}
+
+  async findAllRoundSeat(roundId: number) {
+    try {
+      return this.roundSeatRepository.findBy({ roundId });
+    } catch (error) {
+      return { message: `${error}` };
+    }
   }
 
-  findAll() {
-    return `This action returns all roundSeat`;
-  }
+  async findRoundSeatById(id: number) {
+    const roundSeat = await this.roundSeatRepository.findOneBy({ id });
 
-  findOne(id: number) {
-    return `This action returns a #${id} roundSeat`;
-  }
+    if (!roundSeat) {
+      throw new NotFoundException("해당 회차의 선택 좌석이 없습니다.");
+    }
 
-  update(id: number, updateRoundSeatDto: UpdateRoundSeatDto) {
-    return `This action updates a #${id} roundSeat`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} roundSeat`;
+    return roundSeat;
   }
 }

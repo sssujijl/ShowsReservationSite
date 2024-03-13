@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoundSeatController } from './round_seat.controller';
-import { RoundSeatService } from './round_seat.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { RoundSeatController } from "./round_seat.controller";
+import { RoundSeatService } from "./round_seat.service";
 
-describe('RoundSeatController', () => {
+describe("RoundSeatController", () => {
   let controller: RoundSeatController;
 
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('RoundSeatController', () => {
     controller = module.get<RoundSeatController>(RoundSeatController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });

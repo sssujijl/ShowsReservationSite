@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { CreateShowDto } from './dto/create-show.dto';
-import { UpdateShowDto } from './dto/update-show.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateShowDto } from "./dto/create-show.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Show } from "./entities/show.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class ShowService {
-  create(createShowDto: CreateShowDto) {
-    return 'This action adds a new show';
+  constructor(
+    @InjectRepository(Show) private readonly showRepository: Repository<Show>,
+  ) {}
+
+  async createShow(createShowDto: CreateShowDto) {
+    try {
+      const show = await this.showRepository.save(createShowDto);
+
+      return { message: `${show.title} 공연을 등록하였습니다.`, show };
+    } catch (error) {
+      return { message: `${error}` };
+    }
   }
 
-  findAll() {
-    return `This action returns all show`;
+  async findAllShows() {
+    try {
+      const shows = await this.showRepository.find({
+        select: ["title", "startDate", "endDate"],
+        relations: ["hall"],
+      });
+
+      return shows;
+    } catch (error) {
+      return { message: `${error}` };
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} show`;
-  }
+  async findShowById(id: number) {
+    try {
+      const show = await this.showRepository.findOne({
+        where: { id },
+        relations: ["hall", "rounds"],
+      });
 
-  update(id: number, updateShowDto: UpdateShowDto) {
-    return `This action updates a #${id} show`;
-  }
+      if (!show) {
+        throw new NotFoundException("해당 공연을 찾을 수 없습니다.");
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} show`;
+      return show;
+    } catch (error) {
+      return { message: `${error}` };
+    }
   }
 }

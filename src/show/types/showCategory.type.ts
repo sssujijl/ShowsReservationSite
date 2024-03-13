@@ -1,7 +1,7 @@
 export enum Category {
-    Musical,
-    Concert,
-    Theater,
-    Classic,
-    Opera
+  Musical = "Musical",
+  Concert = "Concert",
+  Theater = "Theater",
+  Classic = "Classic",
+  Opera = "Opera",
 }

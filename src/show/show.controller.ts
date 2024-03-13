@@ -1,34 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ShowService } from './show.service';
-import { CreateShowDto } from './dto/create-show.dto';
-import { UpdateShowDto } from './dto/update-show.dto';
+import { Controller, Post, Body, UseGuards, Get, Param } from "@nestjs/common";
+import { ShowService } from "./show.service";
+import { CreateShowDto } from "./dto/create-show.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { validate } from "class-validator";
 
-@Controller('show')
+@Controller("show")
 export class ShowController {
   constructor(private readonly showService: ShowService) {}
 
+  @UseGuards(AuthGuard("admin"))
   @Post()
-  create(@Body() createShowDto: CreateShowDto) {
-    return this.showService.create(createShowDto);
+  async createShow(@Body() createShowDto: CreateShowDto) {
+    validate(createShowDto);
+    return await this.showService.createShow(createShowDto);
   }
 
   @Get()
-  findAll() {
-    return this.showService.findAll();
+  async findAllShows() {
+    return await this.showService.findAllShows();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.showService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShowDto: UpdateShowDto) {
-    return this.showService.update(+id, updateShowDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.showService.remove(+id);
+  @Get(":id")
+  async findShowById(@Param("id") id: number) {
+    return await this.showService.findShowById(+id);
   }
 }

@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { SeatService } from './seat.service';
-import { CreateSeatDto } from './dto/create-seat.dto';
-import { UpdateSeatDto } from './dto/update-seat.dto';
+import { Body, Controller, Param, Post, UseGuards } from "@nestjs/common";
+import { SeatService } from "./seat.service";
+import { AuthGuard } from "@nestjs/passport";
+import { CreateSeatDto } from "./dto/create-seat.dto";
+import { validate } from "class-validator";
+import { HallService } from "src/hall/hall.service";
 
-@Controller('seat')
+@Controller("seat")
 export class SeatController {
-  constructor(private readonly seatService: SeatService) {}
+  constructor(
+    private readonly seatService: SeatService,
+    private readonly hallService: HallService,
+  ) {}
 
-  @Post()
-  create(@Body() createSeatDto: CreateSeatDto) {
-    return this.seatService.create(createSeatDto);
-  }
+  @UseGuards(AuthGuard("admin"))
+  @Post(":hallId")
+  async createSeats(
+    @Body() createSeatDto: CreateSeatDto,
+    @Param("hallId") hallId: number,
+  ) {
+    validate(createSeatDto);
 
-  @Get()
-  findAll() {
-    return this.seatService.findAll();
-  }
+    await this.hallService.findHallById(+hallId);
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.seatService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSeatDto: UpdateSeatDto) {
-    return this.seatService.update(+id, updateSeatDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.seatService.remove(+id);
+    createSeatDto.hallId = +hallId;
+    return await this.seatService.createSeats(createSeatDto);
   }
 }

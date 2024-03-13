@@ -1,25 +1,42 @@
-import { IsNumber, IsString } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { IsString } from "class-validator";
+import { RoundSeat } from "src/round_seat/entities/round_seat.entity";
+import { Show } from "src/show/entities/show.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
-@Entity({ name: 'rounds' })
+@Entity({ name: "rounds" })
 export class Round {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @IsNumber()
-    @Column({ type: 'int', nullable: false })
-    seat_count?: number;
+  @Column({ type: "int", nullable: false })
+  showId: number;
 
-    @IsString()
-    @Column({ type: 'varchar', nullable: false })
-    content: string;
+  @IsString()
+  @Column({ type: "varchar", nullable: false })
+  content: string;
 
-    @Column({ type: 'date', nullable: false })
-    datetime: Date;
+  @Column({ type: "date", nullable: false })
+  datetime: Date;
 
-    @CreateDateColumn()
-    createdAt: Date;
-  
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ManyToOne(() => Show, (show) => show.rounds)
+  @JoinColumn({ name: "showId", referencedColumnName: "id" })
+  show: Show;
+
+  @OneToMany(() => RoundSeat, (roundSeat) => roundSeat.round)
+  roundSeats: RoundSeat[];
 }

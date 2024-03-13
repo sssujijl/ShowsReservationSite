@@ -1,4 +1,4 @@
 export enum Status {
-    BEFORE,
-    COMPLETE
+  Before = "Before",
+  Complete = "Complete",
 }

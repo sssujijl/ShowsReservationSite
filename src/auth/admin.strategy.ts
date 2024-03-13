@@ -1,12 +1,16 @@
 import { Strategy } from "passport-jwt";
 import { UserService } from "src/user/user.service";
 
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
+export class AdminStrategy extends PassportStrategy(Strategy, "admin") {
   constructor(
     private readonly userService: UserService,
     private readonly configService: ConfigService,
@@ -26,6 +30,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
 
     if (!user) {
       throw new NotFoundException("해당하는 사용자를 찾을 수 없습니다.");
+    }
+
+    if (!user.admin) {
+      throw new UnauthorizedException("해당 사용자는 관리자 권한이 없습니다.");
     }
 
     return user;

@@ -1,5 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
-import { PickType } from '@nestjs/mapped-types';
-import { SignUpUserDto } from "./signup-user.dto";
+import { PickType } from "@nestjs/mapped-types";
+import { User } from "../entities/user.entity";
 
-export class SignInUserDto extends PickType(SignUpUserDto, ['email', 'password']) {}
+export class SignInUserDto extends PickType(User, ["email", "password"]) {}

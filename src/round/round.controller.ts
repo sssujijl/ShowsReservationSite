@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { RoundService } from './round.service';
-import { CreateRoundDto } from './dto/create-round.dto';
-import { UpdateRoundDto } from './dto/update-round.dto';
+import { Controller, Get, Post, Body, Param, UseGuards } from "@nestjs/common";
+import { RoundService } from "./round.service";
+import { CreateRoundDto } from "./dto/create-round.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { validate } from "class-validator";
 
-@Controller('round')
+@Controller("round")
 export class RoundController {
   constructor(private readonly roundService: RoundService) {}
 
-  @Post()
-  create(@Body() createRoundDto: CreateRoundDto) {
-    return this.roundService.create(createRoundDto);
+  @UseGuards(AuthGuard("admin"))
+  @Post(":showId")
+  async createRound(
+    @Body() createRoundDto: CreateRoundDto,
+    @Param("showId") showId: number,
+  ) {
+    validate(createRoundDto);
+
+    return await this.roundService.createRound(createRoundDto, +showId);
   }
 
-  @Get()
-  findAll() {
-    return this.roundService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roundService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoundDto: UpdateRoundDto) {
-    return this.roundService.update(+id, updateRoundDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.roundService.remove(+id);
+  @Get(":showId")
+  async findAllRound(@Param("showId") showId: number) {
+    return await this.roundService.findAllRound(+showId);
   }
 }
