@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber } from "class-validator";
+import { IsBoolean, IsNumber } from "class-validator";
 import { Round } from "src/round/entities/round.entity";
 import { Seat } from "src/seat/entities/seat.entity";
 import { Ticket } from "src/ticket/entities/ticket.entity";
@@ -13,7 +13,6 @@ import {
   Unique,
   UpdateDateColumn,
 } from "typeorm";
-import { Status } from "../types/seatStatus.type";
 
 @Entity({ name: "roundSeats" })
 @Unique(["roundId", "seatId"])
@@ -31,9 +30,9 @@ export class RoundSeat {
   @Column({ type: "int", nullable: false })
   price: number;
 
-  @IsEnum(Status, { message: "유효하지 않은 좌석 상태입니다." })
-  @Column({ type: "enum", enum: Status, default: Status.Before })
-  status: Status;
+  @IsBoolean()
+  @Column({ type: "boolean", default: true, nullable: false })
+  status: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

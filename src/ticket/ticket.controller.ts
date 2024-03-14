@@ -1,4 +1,4 @@
-import { Controller, Post, Param, UseGuards, Body } from "@nestjs/common";
+import { Controller, Post, Param, UseGuards, Body, Get } from "@nestjs/common";
 import { TicketService } from "./ticket.service";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { AuthGuard } from "@nestjs/passport";
@@ -22,5 +22,11 @@ export class TicketController {
     createTicketDto.userId = user.id;
 
     return await this.ticketService.createTicket(+roundSeatId, createTicketDto);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get()
+  async findAllTicket(@UserInfo() user: User) {
+    return await this.ticketService.findAllTicket(user.id);
   }
 }
