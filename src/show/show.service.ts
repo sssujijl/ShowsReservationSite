@@ -15,7 +15,7 @@ export class ShowService {
     try {
       const show = await this.showRepository.save(createShowDto);
 
-      return { message: `${show.title} 공연을 등록하였습니다.`, show };
+      return { message: `${show.title} 공연을 등록하였습니다.` };
     } catch (error) {
       return { message: `${error}` };
     }

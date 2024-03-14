@@ -12,7 +12,19 @@ export class RoundSeatService {
 
   async findAllRoundSeat(roundId: number) {
     try {
-      return this.roundSeatRepository.findBy({ roundId });
+      const roundSeats = await this.roundSeatRepository.find({
+        where: { roundId },
+        relations: ["seat", "round"],
+      });
+
+      return roundSeats.map((roundSeat) => ({
+        round: roundSeat.round.content,
+        dateTime: roundSeat.round.datetime,
+        seatClass: roundSeat.seat.seatClass,
+        seatNumber: roundSeat.seat.seatNumber,
+        price: roundSeat.price,
+        status: roundSeat.status,
+      }));
     } catch (error) {
       return { message: `${error}` };
     }

@@ -17,7 +17,9 @@ export class HallService {
 
   async createHall(createHallDto: CreateHallDto) {
     try {
-      return await this.hallRepository.save(createHallDto);
+      await this.hallRepository.save(createHallDto);
+
+      return { message: "공연장이 생성되었습니다." };
     } catch (error) {
       if (error.message.includes("Duplicate entry")) {
         throw new ConflictException("이미 사용 중인 공연장 이름입니다.");
