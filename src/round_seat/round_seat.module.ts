@@ -8,6 +8,6 @@ import { RoundSeat } from "./entities/round_seat.entity";
   imports: [TypeOrmModule.forFeature([RoundSeat])],
   controllers: [RoundSeatController],
   providers: [RoundSeatService],
-  exports: [RoundSeatService],
+  exports: [RoundSeatService, TypeOrmModule],
 })
 export class RoundSeatModule {}

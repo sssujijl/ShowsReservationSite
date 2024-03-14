@@ -1,3 +1,4 @@
+import { IsBoolean } from "class-validator";
 import { RoundSeat } from "src/round_seat/entities/round_seat.entity";
 import { User } from "src/user/entities/user.entity";
 import {
@@ -21,6 +22,10 @@ export class Ticket {
 
   @Column({ type: "int", nullable: false })
   roundSeatId: number;
+
+  @IsBoolean()
+  @Column({ type: "boolean", default: true, nullable: false })
+  status: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

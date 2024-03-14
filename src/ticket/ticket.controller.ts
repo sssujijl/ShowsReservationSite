@@ -29,4 +29,22 @@ export class TicketController {
   async findAllTicket(@UserInfo() user: User) {
     return await this.ticketService.findAllTicket(user.id);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get(":ticketId")
+  async findTicket(
+    @UserInfo() user: User,
+    @Param("ticketId") ticketId: number,
+  ) {
+    return await this.ticketService.findInfo(user.id, +ticketId);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/cancel/:ticketId")
+  async cancelTicket(
+    @UserInfo() user: User,
+    @Param("ticketId") ticketId: number,
+  ) {
+    return await this.ticketService.cancelTicket(user.id, +ticketId);
+  }
 }

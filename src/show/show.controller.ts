@@ -3,6 +3,7 @@ import { ShowService } from "./show.service";
 import { CreateShowDto } from "./dto/create-show.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { validate } from "class-validator";
+import { SearchShowDto } from "./dto/search-show.dto";
 
 @Controller("show")
 export class ShowController {
@@ -23,5 +24,10 @@ export class ShowController {
   @Get(":id")
   async findShowById(@Param("id") id: number) {
     return await this.showService.findShowById(+id);
+  }
+
+  @Post("/search")
+  async searchShows(@Body() searchShowDto: SearchShowDto) {
+    return this.showService.searchShows(searchShowDto);
   }
 }

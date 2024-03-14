@@ -17,5 +17,6 @@ import { RoundSeatModule } from "src/round_seat/round_seat.module";
   ],
   controllers: [RoundController],
   providers: [RoundService],
+  exports: [RoundService],
 })
 export class RoundModule {}

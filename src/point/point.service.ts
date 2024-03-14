@@ -27,4 +27,19 @@ export class PointService {
       return { message: `${error}` };
     }
   }
+
+  async cancelTicket(userId: number, seatPrice: number) {
+    try {
+      const point = await this.pointRepository.findOneBy({ userId });
+      if (!point) {
+        throw new NotFoundException("사용자의 포인트를 찾을 수 없습니다.");
+      }
+
+      const newPoint = point.point + seatPrice;
+
+      await this.pointRepository.update({ userId }, { point: newPoint });
+    } catch (error) {
+      return { message: `${error}` };
+    }
+  }
 }

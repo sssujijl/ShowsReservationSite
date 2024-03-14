@@ -28,18 +28,12 @@ export class RoundSeatService {
     return roundSeat;
   }
 
-  async updateRoundSeat(id: number, status: boolean) {
-    try {
-      console.log("++++++++++++", id, status);
-      console.log("--------");
-      const roundSeat = await this.roundSeatRepository.update(
-        { id },
-        { status },
-      );
-      console.log("!!!!!!!!!!!!!", roundSeat);
-      return roundSeat;
-    } catch (error) {
-      return { message: `${error}` };
-    }
+  async findInfo(id: number) {
+    const roundSeat = await this.roundSeatRepository.findOne({
+      where: { id },
+      relations: ["round", "seat", "seat.hall", "round.show"],
+    });
+
+    return roundSeat;
   }
 }
