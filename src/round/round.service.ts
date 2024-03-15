@@ -4,10 +4,10 @@ import { Round } from "./entities/round.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
 import { Hall } from "src/hall/entities/hall.entity";
-import { Show } from "src/show/entities/show.entity";
 import { SeatClass } from "src/seat/types/seatClass.type";
 import { CreateRoundSeatDto } from "src/round_seat/dto/create-round_seat.dto";
 import { RoundSeat } from "src/round_seat/entities/round_seat.entity";
+import { ShowService } from "src/show/show.service";
 
 @Injectable()
 export class RoundService {
@@ -15,10 +15,9 @@ export class RoundService {
     @InjectRepository(Round)
     private readonly roundRepository: Repository<Round>,
     private dataSource: DataSource,
+    private readonly showService: ShowService,
     @InjectRepository(Hall)
     private readonly hallRepository: Repository<Hall>,
-    @InjectRepository(Show)
-    private readonly showRepository: Repository<Show>,
   ) {}
 
   async createRound(createRoundDto: CreateRoundDto, showId: number) {
@@ -51,20 +50,19 @@ export class RoundService {
   }
 
   async findSeatsId(showId: number) {
-    const show = await this.showRepository.findOneBy({ id: showId });
-    if (!show) {
-      throw new NotFoundException("해당 공연을 찾을 수 없습니다.");
+    const show = await this.showService.findShowById(showId);
+
+    if ("hallId" in show) {
+      const hall = await this.hallRepository.findOne({
+        where: { id: show.hallId },
+        relations: ["seats"],
+      });
+
+      return hall.seats.map((seat) => ({
+        id: seat.id,
+        seatClass: seat.seatClass,
+      }));
     }
-
-    const hall = await this.hallRepository.findOne({
-      where: { id: show.hallId },
-      relations: ["seats"],
-    });
-
-    return hall.seats.map((seat) => ({
-      id: seat.id,
-      seatClass: seat.seatClass,
-    }));
   }
 
   async createRoundSeat(

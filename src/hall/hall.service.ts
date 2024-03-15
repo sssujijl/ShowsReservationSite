@@ -61,21 +61,4 @@ export class HallService {
       { VIP: 0, S: 0, R: 0, A: 0, B: 0 },
     );
   }
-
-  async findHallandSeat(id: number) {
-    try {
-      const hall = await this.hallRepository.findOne({
-        where: { id },
-        relations: ["seats"],
-      });
-
-      if (!hall) {
-        throw new NotFoundException("해당 공연장이 없습니다.");
-      }
-
-      return hall;
-    } catch (error) {
-      return { message: `${error}` };
-    }
-  }
 }
