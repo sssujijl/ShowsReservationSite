@@ -14,10 +14,14 @@ import { SignInUserDto } from "./dto/signin-user.dto";
 import { SignUpUserDto } from "./dto/signup-user.dto";
 import { User } from "./entities/user.entity";
 import { UserService } from "./user.service";
+import { JwtService } from "@nestjs/jwt";
 
 @Controller("user")
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post("/signup")
   async signup(
@@ -34,10 +38,24 @@ export class UserController {
   }
 
   @Post("/signin")
-  async signin(@Body() signInUserDto: SignInUserDto, @Res() res: Response) {
-    validate(signInUserDto);
+  async signin(@Body() signInUserDto: SignInUserDto, @Res() res: any) {
+    try {
+      validate(signInUserDto);
 
-    return await this.userService.signin(signInUserDto, res);
+      const user = await this.userService.signin(signInUserDto);
+
+      console.log(user);
+      if ("email" in user) {
+        const payload = { email: user.email, id: user.id };
+        const token = this.jwtService.sign(payload);
+
+        res.cookie("access_token", token, { httpOnly: true });
+      }
+
+      return res.json({ message: "로그인이 완료되었습니다." });
+    } catch (error) {
+      return res.json({ message: `${error.message}` });
+    }
   }
 
   @UseGuards(AuthGuard("jwt"))

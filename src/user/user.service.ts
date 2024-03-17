@@ -9,16 +9,13 @@ import { SignInUserDto } from "./dto/signin-user.dto";
 import { SignUpUserDto } from "./dto/signup-user.dto";
 import { User } from "./entities/user.entity";
 import * as bcrypt from "bcryptjs";
-import { JwtService } from "@nestjs/jwt";
 import { Point } from "../point/entites/point.entity";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
     @InjectRepository(Point)
-    private readonly pointRepository: Repository<Point>,
     private dataSource: DataSource,
   ) {}
 
@@ -66,30 +63,19 @@ export class UserService {
     }
   }
 
-  async signin(signInUserDto: SignInUserDto, res: any) {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { email: signInUserDto.email },
-        select: ["email", "password"],
-      });
+  async signin(signInUserDto: SignInUserDto) {
+    const user = await this.userRepository.findOne({
+      where: { email: signInUserDto.email },
+      select: ["id", "email", "password"],
+    });
 
-      if (!user) {
-        throw new UnauthorizedException("존재하지 않는 이메일입니다.");
-      } else if (
-        !(await bcrypt.compare(signInUserDto.password, user.password))
-      ) {
-        throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
-      }
-
-      const payload = { email: user.email, id: user.id };
-      const token = this.jwtService.sign(payload);
-
-      res.cookie("access_token", token, { httpOnly: true });
-
-      return res.status(201).json({ messagage: "로그인이 완료되었습니다." });
-    } catch (error) {
-      return { message: `${error}` };
+    if (!user) {
+      throw new UnauthorizedException("존재하지 않는 이메일입니다.");
+    } else if (!(await bcrypt.compare(signInUserDto.password, user.password))) {
+      throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
     }
+
+    return user;
   }
 
   async findByEmail(email: string) {
